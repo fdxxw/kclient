@@ -1,0 +1,57 @@
+// The Vue build version to load with the `import` command
+// (runtime-only or standalone) has been set in webpack.base.conf with an alias.
+import Vue from 'vue';
+import ElementUI from 'element-ui';
+import 'element-ui/lib/theme-chalk/index.css';
+import App from './App';
+import router from './router';
+import moment from 'moment'
+
+import axios from "axios";
+
+Vue.prototype.$http = axios;
+
+Vue.prototype.$url = 'http://127.0.0.1:8080';
+Vue.prototype.$moment = moment;
+
+Vue.config.productionTip = false;
+Vue.use(ElementUI);
+
+/* eslint-disable no-new */
+new Vue({
+  el: '#app',
+  router,
+  components: { App },
+  template: '<App/>'
+});
+
+
+Date.prototype.Format = function(fmt){
+    var o = {
+        "M+": this.getMonth()+1,
+        "d+": this.getDate(),
+        "H+": this.getHours(),
+        "m+": this.getMinutes(),
+        "s+": this.getSeconds(),
+        "S+": this.getMilliseconds()
+    };
+
+    //因位date.getFullYear()出来的结果是number类型的,所以为了让结果变成字符串型，下面有两种方法：
+
+
+
+    if(/(y+)/.test(fmt)){
+        //第一种：利用字符串连接符“+”给date.getFullYear()+""，加一个空字符串便可以将number类型转换成字符串。
+
+        fmt=fmt.replace(RegExp.$1,(this.getFullYear()+"").substr(4-RegExp.$1.length));
+    }
+    for(var k in o){
+        if (new RegExp("(" + k +")").test(fmt)){
+
+            //第二种：使用String()类型进行强制数据类型转换String(date.getFullYear())，这种更容易理解。
+
+            fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(String(o[k]).length)));
+        }
+    }
+    return fmt;
+}
