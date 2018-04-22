@@ -5,17 +5,21 @@
 
     <el-container >
       <el-main>
-        <el-form :inline="true">
+        <el-form :inline="true" label-position="left">
           <metric v-on:message="updateMetric"></metric>
           <date-picker v-on:message="updateDate"></date-picker>
           <el-form-item>
-            <el-button type="primary" @click="onSubmit">submit</el-button>
+            <el-button type="primary" @click="onSubmit" size="small">submit</el-button>
           </el-form-item>
         </el-form>
 
-        <el-form :inline="true">
+        <el-form :inline="true" label-position="left">
           <group-by></group-by>
         </el-form>
+
+
+        <where></where>
+
         <data-table v-bind="tableData"></data-table>
       </el-main>
 
@@ -30,6 +34,7 @@
   import DatePicker from "./DatePicker"
   import Table from "./Table"
   import GroupBy from "./GroupBy"
+  import Where from './Where'
   import Bus from '../bus'
 
   export default {
@@ -37,7 +42,8 @@
           'metric': Metric,
           'date-picker': DatePicker,
           'data-table': Table,
-          'group-by': GroupBy
+          'group-by': GroupBy,
+          'where': Where,
       },
 
       data() {
@@ -47,6 +53,7 @@
               endDate: null,
               tableData:{columns: [], data: []},
               tags: [],
+              where: {},
           }
       },
 
@@ -65,6 +72,19 @@
 
               this.tableData.columns.push({key: 'date', name: 'date'});
               this.tableData.columns.push({key: 'value', name: 'value'});
+          });
+
+          Bus.$on('change-where', (wheres) => {
+              debugger;
+              let o;
+              var where = {};
+              for(let i = 0; o = wheres[i++];) {
+                  if(typeof  where[o.name] === 'undefined') {
+                      where[o.name] = [];
+                  }
+                  where[o.name].push(o.value);
+              }
+              this.where = where;
           })
       },
 
@@ -81,11 +101,12 @@
           },
 
           onSubmit: function () {
+              debugger;
               const json = {};
               const groupBy = [];
               groupBy.push({name: 'tag', tags: this.tags});
               json['metrics'] = [];
-              json.metrics.push({tags: {}, name: this.metric, group_by: groupBy});
+              json.metrics.push({tags: this.where, name: this.metric, group_by: groupBy});
               json['plugins'] = [];
               json['cache_time'] = 0;
               this.startDate.setMilliseconds(0);

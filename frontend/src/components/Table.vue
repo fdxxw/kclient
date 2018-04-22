@@ -1,5 +1,5 @@
 <template>
-    <el-table :data="data" border stripe height="500" fit size="small" cellpadding="2" >
+    <el-table :data="data" border stripe height="600" fit size="small" cellpadding="2" >
         <el-table-column
                 v-for="(item,index) in columns"
                 :key="index"

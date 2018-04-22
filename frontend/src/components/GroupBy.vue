@@ -1,14 +1,26 @@
 <template>
-    <el-form-item label="Tags">
-        <el-select v-model="input" :style="{width: width}" multiple filterable placeholder="请选择" @change="change">
-            <el-option
-                    v-for="item in options"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value">
-            </el-option>
-        </el-select>
-    </el-form-item>
+    <div>
+        <el-form-item label="Group By">
+            <el-select v-model="groupType" filterable placeholder="请选择" size="small">
+                <el-option
+                        label="Tags"
+                        value="tags">
+                </el-option>
+            </el-select>
+        </el-form-item>
+
+        <el-form-item label="Tags">
+            <el-select v-model="input" size="small" :style="{width: width}" multiple filterable placeholder="请选择" @change="change">
+                <el-option
+                        v-for="item in options"
+                        :key="item.value"
+                        :label="item.label"
+                        :value="item.value">
+                </el-option>
+            </el-select>
+        </el-form-item>
+    </div>
+
 </template>
 
 <script>
@@ -22,6 +34,7 @@
                 options: [],
                 input: '',
                 width: '20em',
+                groupType: 'tags',
             }
         },
 
@@ -36,17 +49,20 @@
         methods: {
             getTags: function (metricName) {
                 this.options.length = 0;
-                var defaultWidth = 20;
+                let defaultWidth = 20;
                 var json = {"metrics":[{"tags":{},"name": metricName}],"plugins":[],"cache_time":0,"start_absolute":0};
                 this.$http.post(this.$url + '/api/v1/datapoints/query/tags', json).then(response => {
                     var tags = response.data.queries[0].results[0].tags;
                     for(var key in tags) {
-                        if(key.length > defaultWidth) {
+                        /*if(key.length > defaultWidth) {
                             this.width = key.length + 'em';
-                        }
+                        }*/
+                        defaultWidth += key.length;
                         this.options.push({label: key, value: key});
                     }
+                    this.width = defaultWidth + 'em';
                     console.log(this.options);
+                    Bus.$emit('change-tags', this.options);
                 }, response => {
                     // error callback
                 })

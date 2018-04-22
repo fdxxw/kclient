@@ -1,7 +1,7 @@
 <template>
 
     <el-form-item label="Date">
-        <el-date-picker
+        <el-date-picker size="small"
                 @change="change"
                 v-model="dateValue"
                 type="datetimerange"

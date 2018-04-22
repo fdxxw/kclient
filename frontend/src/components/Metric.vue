@@ -1,7 +1,7 @@
 <template>
 
     <el-form-item label="Metric">
-        <el-select v-model="input" :style="{width: width}" filterable placeholder="请选择" @change="change">
+        <el-select v-model="input" size="small" :style="{width: width}" filterable placeholder="请选择" @change="change">
             <el-option
                     v-for="item in options"
                     :key="item.value"
