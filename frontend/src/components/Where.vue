@@ -30,7 +30,7 @@
         name: "Where",
         data() {
             return {
-                wheres: [{name: '1', value: ''}],
+                wheres: [],
                 tags:[],
             }
         },
@@ -48,7 +48,7 @@
             },
 
             addWhere: function () {
-                this.wheres.push({name: '1', value: ''});
+                this.wheres.push({name: this.tags[0].value, value: ''});
             },
 
             change: function () {
