@@ -51,7 +51,7 @@
                 this.options.length = 0;
                 let defaultWidth = 20;
                 var json = {"metrics":[{"tags":{},"name": metricName}],"plugins":[],"cache_time":0,"start_absolute":0};
-                this.$http.post(this.$url + '/api/v1/datapoints/query/tags', json).then(response => {
+                this.$util.axios.post(this.$kdb.url + '/api/v1/datapoints/query/tags', json).then(response => {
                     var tags = response.data.queries[0].results[0].tags;
                     for(var key in tags) {
                         /*if(key.length > defaultWidth) {

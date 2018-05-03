@@ -5,14 +5,12 @@ import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
 import App from './App';
 import router from './router';
-import moment from 'moment'
+import {kdb, rdb} from './config';
+import util from './util'
 
-import axios from "axios";
-
-Vue.prototype.$http = axios;
-
-Vue.prototype.$url = 'http://192.168.13.110:8080';
-Vue.prototype.$moment = moment;
+Vue.prototype.$kdb = kdb;
+Vue.prototype.$rdb = rdb;
+Vue.prototype.$util = util;
 
 Vue.config.productionTip = false;
 Vue.use(ElementUI);

@@ -16,7 +16,7 @@
 
 <script>
 
-  import tabPane from './tabPane';
+  import tabPane from './TabPane';
 
   export default {
       components: {

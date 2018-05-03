@@ -2,6 +2,7 @@
     <el-tabs v-model="activeName" type="card" @tab-click="handleClick">
         <el-tab-pane label="链接信息" name="urlInfo">
 
+            <link-info></link-info>
         </el-tab-pane>
         <el-tab-pane label="条件" name="condition">
             <el-form :inline="true" label-position="left">
@@ -32,6 +33,7 @@
     import Table from "./Table"
     import GroupBy from "./GroupBy"
     import Where from './Where'
+    import LinkInfo from './LinkInfo';
     import Bus from '../bus'
     export default {
         name: 'tabPane',
@@ -41,6 +43,7 @@
             'data-table': Table,
             'group-by': GroupBy,
             'where': Where,
+            'link-info': LinkInfo,
         },
         data() {
             return {
@@ -120,7 +123,7 @@
                 this.endDate.setMilliseconds(0);
                 json['start_absolute'] = this.startDate.getTime();
                 json['end_absolute'] = this.endDate.getTime();
-                this.$http.post(this.$url + '/api/v1/datapoints/query',json).then((response)=> {
+                this.$util.axios.post(this.$kdb.url + '/api/v1/datapoints/query',json).then((response)=> {
                     console.log(response);
                     let results = response.data.queries[0].results;
                     let o;
@@ -136,7 +139,7 @@
                                 for(let key in o.tags) {
                                     dataPoint[key + ''] = o.tags[key + ''][0];
                                 }
-                                dataPoint['date'] = this.$moment(new Date(value[0])).format('YYYY-MM-DD HH:mm:ss.SSS');
+                                dataPoint['date'] = this.$util.moment(new Date(value[0])).format('YYYY-MM-DD HH:mm:ss.SSS');
                                 dataPoint['value'] = value[1];
                                 dataPoints.push(dataPoint)
                             }

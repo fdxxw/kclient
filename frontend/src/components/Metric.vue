@@ -29,15 +29,21 @@
             }
         },
 
+        created() {
+            Bus.$on("change-kdb", ()=> {
+                this.getMetric();
+            })
+        },
+
         mounted() {
             this.getMetric();
         },
 
         methods: {
             getMetric: function () {
-
+                this.options = [];
                 var defaultWidth = 20;
-                this.$http.get(this.$url + '/api/v1/metricnames').then(response => {
+                this.$util.axios.get(this.$kdb.url + '/api/v1/metricnames').then(response => {
                     var o = null;
                     for(var i = 0; o = response.data.results[i++];) {
                         if(o.length > defaultWidth) {
