@@ -129,7 +129,7 @@
                     let value;
                     for(let i = 0; o = results[i++];) {
 
-                        if(Object.keys(o['tags']).length === 5) {
+                        if(Object.keys(o['tags']).length === this.tags.length) {
 
                             for(let j = 0; value = o.values[j++];) {
                                 dataPoint = {};

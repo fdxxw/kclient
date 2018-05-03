@@ -11,7 +11,7 @@ import axios from "axios";
 
 Vue.prototype.$http = axios;
 
-Vue.prototype.$url = 'http://127.0.0.1:8080';
+Vue.prototype.$url = 'http://192.168.13.110:8080';
 Vue.prototype.$moment = moment;
 
 Vue.config.productionTip = false;
