@@ -147,6 +147,7 @@
                     }
 
                     this.tableData.data = dataPoints;
+                    Bus.$emit('table-data-change', dataPoints);
                     this.activeName = 'queryResult';
 
                 })
