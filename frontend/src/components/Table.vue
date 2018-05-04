@@ -83,6 +83,9 @@
                             this.dataEnd.push(value);
                         }
                     });
+
+                    //检索后当前页设为1
+                    this.currentPage = 1;
                 }
             },
             handleSizeChange: function (size) {
