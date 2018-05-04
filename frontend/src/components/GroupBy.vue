@@ -19,6 +19,11 @@
                 </el-option>
             </el-select>
         </el-form-item>
+        <el-form-item>
+            <el-button size="small" @click="clear">
+                清空
+            </el-button>
+        </el-form-item>
     </div>
 
 </template>
@@ -69,6 +74,11 @@
             },
             
             change: function () {
+                Bus.$emit('changeGroupBy', this.input);
+            },
+
+            clear: function () {
+                this.input = [];
                 Bus.$emit('changeGroupBy', this.input);
             }
         }
