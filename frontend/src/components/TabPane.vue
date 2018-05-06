@@ -14,7 +14,7 @@
             </el-form>
 
             <el-form :inline="true" label-position="left">
-                <group-by></group-by>
+                <group-by v-bind:metric-name="metric"></group-by>
             </el-form>
 
 
@@ -23,6 +23,11 @@
         <el-tab-pane label="结果" name="queryResult">
 
             <data-table v-bind="tableData"></data-table>
+        </el-tab-pane>
+
+        <el-tab-pane label="添加" name="insert">
+
+            <insert></insert>
         </el-tab-pane>
     </el-tabs>
 </template>
@@ -34,6 +39,7 @@
     import GroupBy from "./GroupBy"
     import Where from './Where'
     import LinkInfo from './LinkInfo';
+    import Insert from './Insert';
     import Bus from '../bus'
     export default {
         name: 'tabPane',
@@ -44,6 +50,7 @@
             'group-by': GroupBy,
             'where': Where,
             'link-info': LinkInfo,
+            'insert': Insert,
         },
         data() {
             return {
@@ -58,12 +65,6 @@
         },
         created () {
             let that = this;
-            document.onkeydown = function (e) {
-                let key = e.keyCode;
-                if(key === 13) {
-                    that.submit();
-                }
-            }
         },
         mounted() {
             Bus.$on('changeGroupBy', (data)=>{
@@ -78,8 +79,6 @@
                     this.pointTemplate[o] = '';
                 }
 
-                this.tableData.columns.push({key: 'date', name: 'date'});
-                this.tableData.columns.push({key: 'value', name: 'value'});
             });
 
             Bus.$on('change-where', (wheres) => {
@@ -141,6 +140,7 @@
                                 }
                                 dataPoint['date'] = this.$util.moment(new Date(value[0])).format('YYYY-MM-DD HH:mm:ss.SSS');
                                 dataPoint['value'] = value[1];
+                                dataPoint['editFlag'] = false;
                                 dataPoints.push(dataPoint)
                             }
                         }

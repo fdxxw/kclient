@@ -1,6 +1,6 @@
 <template>
 
-    <el-form-item label="Metric">
+    <el-form-item label="Metric" label-width="120px">
         <el-select v-model="input" size="small" :style="{width: width}" filterable placeholder="请选择" @change="change">
             <el-option
                     v-for="item in options"
@@ -59,7 +59,6 @@
 
             change: function () {
                 this.$emit("message", this.input);
-                Bus.$emit('change-metric', this.input);
             }
         }
     }

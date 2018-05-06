@@ -2,7 +2,7 @@
     <div>
         <el-input placeholder="过滤" icon="search" v-model="filterText" @change="doFilter" class="search-input">
         </el-input>
-        <el-table :data="dataEnd.slice((currentPage-1)*pagesize,currentPage*pagesize)" border stripe height="600" fit size="small" cellpadding="2" >
+        <el-table :data="dataEnd.slice((currentPage-1)*pagesize,currentPage*pagesize)" border stripe height="600" fit size="" cellpadding="2" >
             <el-table-column
                     v-for="(item,index) in columns"
                     :key="index"
@@ -12,6 +12,31 @@
                     sortable
                     show-overflow-tooltip
             >
+            </el-table-column>
+
+            <el-table-column label="date" prop="date" sortable>
+
+            </el-table-column>
+
+            <el-table-column label="value" sortable>
+                <template slot-scope="scope">
+                    <div @dblclick="scope.row.editFlag = true">
+                        <span v-show="!scope.row.editFlag" >{{scope.row.value}}</span>
+                        <span v-show="scope.row.editFlag"><el-input @keyup.enter.native="alter(scope.row)" v-model="scope.row.value"></el-input></span>
+                    </div>
+                </template>
+            </el-table-column>
+
+            <el-table-column label="操作">
+                <template slot-scope="scope">
+                    <el-button
+                            size="mini"
+                            @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
+                    <el-button
+                            size="mini"
+                            type="danger"
+                            @click="handleDelete(scope.$index, scope.row)">删除</el-button>
+                </template>
             </el-table-column>
         </el-table>
 
@@ -87,6 +112,9 @@
                     //检索后当前页设为1
                     this.currentPage = 1;
                 }
+            },
+            alter: function(row){
+                row.editFlag = false;
             },
             handleSizeChange: function (size) {
                 this.pagesize = size;

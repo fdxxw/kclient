@@ -20,9 +20,11 @@
             </el-select>
         </el-form-item>
         <el-form-item>
-            <el-button size="small" @click="clear">
-                清空
-            </el-button>
+            <el-tooltip class="item" effect="dark" content="click全选/ctrl + click清空" placement="top-start">
+                <el-button size="small" @click.left="chooseAll" @click.ctrl="clear">
+                    全选/清空
+                </el-button>
+            </el-tooltip>
         </el-form-item>
     </div>
 
@@ -34,6 +36,8 @@
     export default {
         name: "groupBy",
 
+        props:['metricName'],
+
         data() {
             return {
                 options: [],
@@ -44,11 +48,17 @@
         },
 
         mounted() {
-            Bus.$on('change-metric',(metricName) => {
+            /*Bus.$on('change-metric',(metricName) => {
 
                 this.getTags(metricName);
-            });
+            });*/
 
+        },
+        watch: {
+            metricName(currName) {
+
+                this.getTags(currName);
+            }
         },
 
         methods: {
@@ -74,6 +84,13 @@
             },
             
             change: function () {
+                Bus.$emit('changeGroupBy', this.input);
+            },
+
+            chooseAll: function() {
+                this.input = this.options.map((item)=>{
+                    return item.value;
+                });
                 Bus.$emit('changeGroupBy', this.input);
             },
 

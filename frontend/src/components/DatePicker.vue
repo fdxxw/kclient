@@ -1,6 +1,6 @@
 <template>
 
-    <el-form-item label="Date">
+    <el-form-item label="Date" label-width="120px">
         <el-date-picker size="small"
                 @change="change"
                 v-model="dateValue"
