@@ -89,7 +89,9 @@
             },
 
             submit: function () {
-                debugger;
+
+                this.clearParam();
+
                 for(let i = 0, o; o = this.totalTags[i++];) {
                     this.tags[o.name] = o.value;
                 }
@@ -108,6 +110,11 @@
                 this.$util.axios.post(this.$kdb.url + '/api/v1/datapoints', postJson).then((response)=>{
                     console.log(response);
                 })
+            },
+
+            clearParam: function () {
+                this.tags = {};
+                this.datapoints = [];
             }
         },
     }
