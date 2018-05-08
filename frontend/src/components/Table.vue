@@ -105,6 +105,7 @@
                         }
 
                         if(has) {
+                            value['index'] = index;
                             this.dataEnd.push(value);
                         }
                     });
@@ -144,6 +145,38 @@
             },
             handleCurrentChange: function(currentPage){
                 this.currentPage = currentPage;
+            },
+
+            handleDelete: function (index, row) {
+                let postJson = {};
+
+                let tags = {};
+                this.tags.forEach(item=>{
+                    tags[item] = row[item];
+                });
+
+                postJson['metrics'] = [];
+                postJson.metrics.push({tags: tags, name: this.metric});
+                postJson['plugins'] = [];
+                postJson['cache_time'] = 0;
+                postJson['start_absolute'] = row.time;
+                postJson['end_absolute'] = row.time;
+
+                this.$util.axios.post(this.$kdb.url + '/api/v1/datapoints/delete', postJson).then((response)=>{
+
+                    this.loading = false;
+                    this.$message({
+                        message: '删除成功',
+                        type: 'success'
+                    });
+                    this.dataEnd.splice(index, 1);
+                    if(typeof row.index != 'undefined') {
+                        this.tableData.splice(row.index, 1);
+                    }
+                }, response => {
+                    this.loading = false;
+                    this.$message.error('删除失败');
+                })
             }
         }
 
