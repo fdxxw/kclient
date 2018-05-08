@@ -60,7 +60,7 @@
     export default {
         name: "table",
         props: [
-            'columns', 'data'
+            'columns', 'data', 'tags', 'metric'
         ],
 
         data() {
@@ -115,6 +115,29 @@
             },
             alter: function(row){
                 row.editFlag = false;
+
+                let tags = {};
+                this.tags.forEach(item=>{
+                   tags[item] = row[item];
+                });
+
+                let postJson = [{
+                    name : this.metric,
+                    datapoints: [[row.time, row.value]],
+                    tags: tags,
+                }];
+
+                this.$util.axios.post(this.$kdb.url + '/api/v1/datapoints', postJson).then((response)=>{
+
+                    this.loading = false;
+                    this.$message({
+                        message: '修改成功',
+                        type: 'success'
+                    });
+                }, response => {
+                    this.loading = false;
+                    this.$message.error('修改失败');
+                })
             },
             handleSizeChange: function (size) {
                 this.pagesize = size;

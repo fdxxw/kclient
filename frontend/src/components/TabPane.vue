@@ -61,7 +61,7 @@
                 metric: '',
                 startDate: null,
                 endDate: null,
-                tableData:{columns: [], data: []},
+                tableData:{columns: [], data: [], tags: [], metric: ''},
                 tags: [],
                 where: {},
                 loading: false,
@@ -146,6 +146,7 @@
                                     dataPoint[key + ''] = o.tags[key + ''][0];
                                 }
                                 dataPoint['date'] = this.$util.moment(new Date(value[0])).format('YYYY-MM-DD HH:mm:ss.SSS');
+                                dataPoint['time'] = value[0];
                                 dataPoint['value'] = value[1];
                                 dataPoint['editFlag'] = false;
                                 dataPoints.push(dataPoint)
@@ -154,6 +155,8 @@
                     }
 
                     this.tableData.data = dataPoints;
+                    this.tableData.metric = this.metric;
+                    this.tableData.tags = this.tags;
                     Bus.$emit('table-data-change', dataPoints);
                     this.loading = false;
                     this.activeName = 'queryResult';
