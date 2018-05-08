@@ -1,10 +1,13 @@
 <template>
-    <el-tabs v-model="activeName" type="card" @tab-click="handleClick">
+    <el-tabs v-model="activeName" type="card" @tab-click="handleClick"
+             v-loading="loading"
+             element-loading-text="拼命加载中">
         <el-tab-pane label="链接信息" name="urlInfo">
 
             <link-info></link-info>
         </el-tab-pane>
         <el-tab-pane label="条件" name="condition">
+
             <el-form :inline="true" label-position="left">
                 <metric v-on:message="updateMetric"></metric>
                 <date-picker v-on:message="updateDate"></date-picker>
@@ -61,6 +64,7 @@
                 tableData:{columns: [], data: []},
                 tags: [],
                 where: {},
+                loading: false,
             };
         },
         created () {
@@ -122,6 +126,9 @@
                 this.endDate.setMilliseconds(0);
                 json['start_absolute'] = this.startDate.getTime();
                 json['end_absolute'] = this.endDate.getTime();
+
+                this.loading = true;
+
                 this.$util.axios.post(this.$kdb.url + '/api/v1/datapoints/query',json).then((response)=> {
                     console.log(response);
                     let results = response.data.queries[0].results;
@@ -148,11 +155,13 @@
 
                     this.tableData.data = dataPoints;
                     Bus.$emit('table-data-change', dataPoints);
+                    this.loading = false;
                     this.activeName = 'queryResult';
 
                 })
                     .catch(function (error) {
                         console.log(error);
+                        this.loading = false;
                     });
             }
 

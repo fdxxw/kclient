@@ -1,7 +1,38 @@
 <template>
-    <el-tabs v-model="activeName" type="card">
+    <el-tabs v-model="activeName" type="card" v-loading="loading">
         <el-tab-pane label="添加Metric" name="addMetric">
 
+            <div style="display: flex; justify-content: center">
+                <el-form label-position="left">
+                    <el-form-item label="Metric" label-width="80px">
+                        <el-input v-model="inputMetricName" placeholder="输入Metric名称"></el-input>
+                    </el-form-item>
+                    <el-form-item label="Tags" label-width="80px">
+                        <el-tag
+                                :key="tag"
+                                v-for="tag in dynamicTags"
+                                closable
+                                :disable-transitions="false"
+                                @close="handleClose(tag)">
+                            {{tag}}
+                        </el-tag>
+                        <el-input
+                                class="input-new-tag"
+                                v-if="inputTagVisible"
+                                v-model="inputTagValue"
+                                ref="saveTagInput"
+                                size="small"
+                                @keyup.enter.native="handleInputConfirm"
+                                @blur="handleInputConfirm"
+                        >
+                        </el-input>
+                        <el-button v-else class="button-new-tag" size="small" @click="showInput">+ New Tag</el-button>
+                    </el-form-item>
+                    <el-form-item label-width="80px">
+                        <el-button type="primary" @click="addMetric" size="small">Add</el-button>
+                    </el-form-item>
+                </el-form>
+            </div>
         </el-tab-pane>
         <el-tab-pane label="添加数据点" name="addData">
             <div style="display: flex; justify-content: center">
@@ -50,7 +81,14 @@
                 tags: {},
                 datapoints: [],
                 date:[],
-                value: 30.3333,
+                value: '40.3322',
+                loading: false,
+
+                //添加Metric
+                inputMetricName: '',
+                dynamicTags: [],
+                inputTagVisible: false,
+                inputTagValue: ''
             }
         },
 
@@ -77,18 +115,29 @@
                 this.totalTags = [];
 
                 var json = {"metrics":[{"tags":{},"name": metricName}],"plugins":[],"cache_time":0,"start_absolute":0};
+                this.loading = true;
                 this.$util.axios.post(this.$kdb.url + '/api/v1/datapoints/query/tags', json).then(response => {
                     var tags = response.data.queries[0].results[0].tags;
                     for(var key in tags) {
 
                         this.totalTags.push({label: key, name: key, value: ''});
                     }
+
+                    this.loading = false;
+
                 }, response => {
                     // error callback
+                    this.loading = false;
+
                 })
             },
 
             submit: function () {
+
+                if(this.value.indexOf('.') === -1) {
+                    this.$message.warning('数据值必须为浮点数');
+                    return;
+                }
 
                 this.clearParam();
 
@@ -99,7 +148,7 @@
                 let timestamp = this.date[0];
 
                 while (timestamp <= this.date[1]) {
-                    this.datapoints.push([timestamp, this.value]);
+                    this.datapoints.push([timestamp, parseFloat(this.value)]);
                     timestamp = timestamp + this.range*60*1000;
                 }
                 let postJson = [{
@@ -107,19 +156,96 @@
                     tags: this.tags,
                     datapoints: this.datapoints,
                 }];
+                debugger;
                 this.$util.axios.post(this.$kdb.url + '/api/v1/datapoints', postJson).then((response)=>{
                     console.log(response);
+                    if(response.status = '') {
+
+                    }
+                    this.loading = false;
+                    this.$message({
+                        message: '添加成功',
+                        type: 'success'
+                    });
+                }, response => {
+                    this.loading = false;
+                    this.$message.error('添加失败');
                 })
             },
 
+            addMetric: function() {
+                let tags = {};
+                this.dynamicTags.forEach(item => {
+                   tags[item] = 'first';
+                });
+                let postJson = [{
+                    name: this.inputMetricName,
+                    datapoints: [[0,0]],
+                    tags: tags,
+                }];
+                debugger;
+
+                this.$util.axios.post(this.$kdb.url + '/api/v1/datapoints', postJson).then((response)=>{
+                    console.log(response);
+                    if(response.status = '') {
+
+                    }
+                    this.loading = false;
+                    this.$message({
+                        message: '添加成功',
+                        type: 'success'
+                    });
+                }, response => {
+                    debugger;
+                    this.loading = false;
+                    this.$message.error('添加失败');
+                })
+            },
             clearParam: function () {
                 this.tags = {};
                 this.datapoints = [];
+            },
+
+
+            /* 添加Metric方法区域 */
+
+            handleClose(tag) {
+                this.dynamicTags.splice(this.dynamicTags.indexOf(tag), 1);
+            },
+
+            showInput() {
+                this.inputTagVisible = true;
+                this.$nextTick(_ => {
+                    this.$refs.saveTagInput.$refs.input.focus();
+                });
+            },
+
+            handleInputConfirm() {
+                let inputTagValue = this.inputTagValue;
+                if (inputTagValue) {
+                    this.dynamicTags.push(inputTagValue);
+                }
+                this.inputTagVisible = false;
+                this.inputTagValue = '';
             }
         },
     }
 </script>
 
 <style scoped>
-
+    .el-tag + .el-tag {
+        margin-left: 10px;
+    }
+    .button-new-tag {
+        margin-left: 10px;
+        height: 32px;
+        line-height: 30px;
+        padding-top: 0;
+        padding-bottom: 0;
+    }
+    .input-new-tag {
+        width: 90px;
+        margin-left: 10px;
+        vertical-align: bottom;
+    }
 </style>
