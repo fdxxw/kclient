@@ -1,8 +1,26 @@
 <template>
     <div>
-        <el-input placeholder="过滤" icon="search" v-model="filterText" @change="doFilter" class="search-input">
-        </el-input>
-        <el-table :data="dataEnd.slice((currentPage-1)*pagesize,currentPage*pagesize)" border stripe height="600" fit size="" cellpadding="2" >
+        <div style="display: flex; justify-content: flex-start">
+            <el-input style="flex: 1; margin-right: 5px" size="small" placeholder="过滤" icon="search" v-model="filterText" @change="doFilter" class="search-input"></el-input>
+            <download-excel
+                    style="margin-right: 5px"
+                    :data   = "dataEnd.slice((currentPage-1)*pagesize,currentPage*pagesize)"
+                    :fields = "excelFileds"
+                    name    = "data.xls">
+
+                <el-button type="primary" size="small">导出当前页</el-button>
+            </download-excel>
+            <download-excel
+                    style="margin-right: 5px"
+                    :data   = "dataEnd"
+                    :fields = "excelFileds"
+                    name    = "data.xls">
+
+                <el-button type="primary" size="small">导出所有</el-button>
+            </download-excel>
+
+        </div>
+        <el-table :data="dataEnd.slice((currentPage-1)*pagesize,currentPage*pagesize)" border stripe height="600" fit size="small" cellpadding="2" >
             <el-table-column
                     v-for="(item,index) in columns"
                     :key="index"
@@ -57,8 +75,14 @@
 
 <script>
     import Bus from '../bus';
+    //https://github.com/jecovier/vue-json-excel
+    import JsonExcel from 'vue-json-excel'
     export default {
         name: "table",
+
+        components: {
+            "download-excel" : JsonExcel,
+        },
         props: [
             'columns', 'data', 'tags', 'metric'
         ],
@@ -71,11 +95,47 @@
               currentPage: 1,
               pagesize: 20,
               filterText: '',
+
+              excel: {
+                  json_fields: {
+                      'Complete name': 'name',
+                  },
+                  json_data: [
+                      {
+                          'name': 'Tony Peña',
+                      },
+                      {
+                          'name': 'Thessaloniki',
+                      }
+                  ],
+                  json_meta: [
+                      [
+                          {
+                              'key': 'charset',
+                              'value': 'utf-8'
+                          }
+                      ]
+                  ],
+              },
+
           }
+        },
+
+        computed: {
+            excelFileds: function () {
+                let fileds = {};
+                this.tags.forEach(tag=>{
+                    fileds[tag] = tag;
+                });
+                fileds['date'] = 'date';
+                fileds['value'] = 'value';
+                return fileds;
+            }
         },
 
         created() {
             Bus.$on("table-data-change", (data)=>{
+                debugger;
                 this.tableData = data;
                 this.doFilter();
             })
@@ -115,6 +175,7 @@
                 }
             },
             alter: function(row){
+                debugger;
                 row.editFlag = false;
 
                 let tags = {};
