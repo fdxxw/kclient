@@ -1,6 +1,6 @@
 <template>
   <el-container>
-    <el-header>Header</el-header>
+    <el-header height="30px">kclient</el-header>
 
 
     <el-container >

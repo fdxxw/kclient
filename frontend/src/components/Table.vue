@@ -62,7 +62,7 @@
                 @size-change="handleSizeChange"
                 @current-change="handleCurrentChange"
                 :current-page="currentPage"
-                :page-sizes="[10, 20, 50, 100, 500, 1000]"
+                :page-sizes="[100, 500, 1000, 2000, 4000, 5000, 10000, 50000]"
                 :page-size="pagesize"
                 layout="total, sizes, prev, pager, next, jumper"
                 :total="dataEnd.length">
@@ -93,7 +93,7 @@
               tableData: [],
               dataEnd: [],
               currentPage: 1,
-              pagesize: 20,
+              pagesize: 100,
               filterText: '',
 
               excel: {
