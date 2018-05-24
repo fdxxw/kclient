@@ -65,6 +65,7 @@
             getTags: function (metricName) {
                 this.options.length = 0;
                 let defaultWidth = 20;
+                this.input = [];
                 var json = {"metrics":[{"tags":{},"name": metricName}],"plugins":[],"cache_time":0,"start_absolute":0};
                 this.$util.axios.post(this.$kdb.url + '/api/v1/datapoints/query/tags', json).then(response => {
                     var tags = response.data.queries[0].results[0].tags;
@@ -74,10 +75,12 @@
                         }*/
                         defaultWidth += key.length;
                         this.options.push({label: key, value: key});
+                        this.input.push(key);
                     }
                     this.width = defaultWidth + 'em';
                     console.log(this.options);
-                    Bus.$emit('change-tags', this.options);
+                    Bus.$emit('change-tags', [this.options, tags]);
+                    Bus.$emit('changeGroupBy', this.input);
                 }, response => {
                     // error callback
                 })

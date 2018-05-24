@@ -40,7 +40,7 @@
                     <metric v-on:message="updateMetric"></metric>
                     <el-form-item v-for="(item, index) in totalTags" :key="index" :label="item.label" label-width="120px">
 
-                        <el-input v-model="item.value"></el-input>
+                        <el-autocomplete style="width: 100%" @focus="onFocus(item.name)" :fetch-suggestions="querySearch" v-model="item.value"></el-autocomplete>
                     </el-form-item>
                     <el-form-item label-width="120px" label="数据粒度/分钟">
                         <el-input-number v-model="range"></el-input-number>
@@ -83,6 +83,8 @@
                 date:[],
                 value: '40.3322',
                 loading: false,
+                tagsValue: {},
+                currTagValues: [],
 
                 //添加Metric
                 inputMetricName: '',
@@ -123,6 +125,7 @@
                         this.totalTags.push({label: key, name: key, value: ''});
                     }
 
+                    this.tagsValue = tags;
                     this.loading = false;
 
                 }, response => {
@@ -227,6 +230,27 @@
                 }
                 this.inputTagVisible = false;
                 this.inputTagValue = '';
+            },
+
+            querySearch: function (queryString, cb) {
+
+                debugger;
+                let results = queryString ? this.currTagValues.filter(this.filter(queryString)) : this.currTagValues;
+                // 调用 callback 返回建议列表的数据
+                cb(results);
+            },
+
+            filter(queryString) {
+                return (item) => {
+                    return (item.value.toLowerCase().indexOf(queryString.toLowerCase()) !== -1);
+                };
+            },
+
+            onFocus: function (name) {
+                this.currTagValues = [];
+                this.tagsValue[name].forEach(item => {
+                    this.currTagValues.push({value: item});
+                });
             }
         },
     }
