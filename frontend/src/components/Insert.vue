@@ -173,7 +173,7 @@
                 }, response => {
                     this.loading = false;
                     this.$message.error('添加失败');
-                })
+                });
             },
 
             addMetric: function() {

@@ -32,6 +32,11 @@
 
             <insert></insert>
         </el-tab-pane>
+
+        <el-tab-pane label="删除" name="delete">
+
+            <delete></delete>
+        </el-tab-pane>
     </el-tabs>
 </template>
 
@@ -43,6 +48,7 @@
     import Where from './Where'
     import LinkInfo from './LinkInfo';
     import Insert from './Insert';
+    import Delete from './Delete';
     import Bus from '../bus'
     export default {
         name: 'tabPane',
@@ -54,6 +60,7 @@
             'where': Where,
             'link-info': LinkInfo,
             'insert': Insert,
+            'delete': Delete,
         },
         data() {
             return {
