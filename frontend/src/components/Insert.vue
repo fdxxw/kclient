@@ -36,24 +36,33 @@
         </el-tab-pane>
         <el-tab-pane label="添加数据点" name="addData">
             <div style="display: flex; justify-content: center">
-                <el-form label-position="left">
-                    <metric v-on:message="updateMetric"></metric>
-                    <el-form-item v-for="(item, index) in totalTags" :key="index" :label="item.label" label-width="120px">
 
-                        <el-autocomplete style="width: 100%" @focus="onFocus(item.name)" :fetch-suggestions="querySearch" v-model="item.value"></el-autocomplete>
-                    </el-form-item>
-                    <el-form-item label-width="120px" label="数据粒度/分钟">
-                        <el-input-number v-model="range"></el-input-number>
-                    </el-form-item>
-                    <date-picker v-on:message="updateDate"></date-picker>
+                <div style="display: flex; justify-content: center;flex-direction: column; width: 40%">
+                    <div>
+                        <el-form label-position="left">
+                            <metric v-on:message="updateMetric"></metric>
+                            <el-form-item v-for="(item, index) in totalTags" :key="index" :label="item.label" label-width="120px">
 
-                    <el-form-item label="数据值" label-width="120px">
-                        <el-input v-model="value"></el-input>
-                    </el-form-item>
-                    <el-form-item label-width="120px">
-                        <el-button type="primary" @click="submit" size="small">submit</el-button>
-                    </el-form-item>
-                </el-form>
+                                <el-autocomplete style="width: 100%" @focus="onFocus(item.name)" :fetch-suggestions="querySearch" v-model="item.value"></el-autocomplete>
+                            </el-form-item>
+                            <!--<el-form-item label-width="120px" label="数据粒度/分钟">
+                                <el-input-number v-model="range"></el-input-number>
+                            </el-form-item>-->
+                            <date-picker v-on:message="updateDate"></date-picker>
+
+                        </el-form>
+                    </div>
+                    <div>
+                        <el-form label-position="left" >
+                            <el-form-item label="数据生成器" label-width="120px">
+                                <el-input v-model="value" type="textarea" :rows="10"></el-input>
+                            </el-form-item>
+                            <el-form-item label-width="120px">
+                                <el-button type="primary" @click="submit" size="small">submit</el-button>
+                            </el-form-item>
+                        </el-form>
+                    </div>
+                </div>
             </div>
         </el-tab-pane>
     </el-tabs>
@@ -81,7 +90,18 @@
                 tags: {},
                 datapoints: [],
                 date:[],
-                value: '40.3322',
+                value: 'var dataPoints = [];\n' +
+                'startTime = new Date(startTime);\n' +
+                'while (startTime <= endTime) {\n' +
+                '    dataPoints.push([startTime.getTime(), parseFloat(123.123)]);\n' +
+                '    startTime.setMinutes(startTime.getMinutes() + 5);// 加五分钟\n' +
+                '    //startTime.setHours(startTime.getHours() + 1);//加一个小时\n' +
+                '    //startTime.setDate(startTime.getDate() + 1);// 加一天\n' +
+                '    //startTime.setMonth(startTime.getMonth() + 1); //加一个月\n' +
+                '    //startTime.setFullYear(startTime.getFullYear() + 1); //加一年\n' +
+                '}\n' +
+                'return dataPoints;\n' +
+                '}',
                 loading: false,
                 tagsValue: {},
                 currTagValues: [],
@@ -150,10 +170,14 @@
 
                 let timestamp = this.date[0];
 
-                while (timestamp <= this.date[1]) {
+                this.datapoints = this.customerFun(this.date[0], this.date[1]);
+
+                debugger;
+
+                /*while (timestamp <= this.date[1]) {
                     this.datapoints.push([timestamp, parseFloat(this.value)]);
                     timestamp = timestamp + this.range*60*1000;
-                }
+                }*/
                 let postJson = [{
                     name: this.metricName,
                     tags: this.tags,
@@ -251,6 +275,15 @@
                 this.tagsValue[name].forEach(item => {
                     this.currTagValues.push({value: item});
                 });
+            },
+
+            customerFun: function (startTime, endTime) {
+                var date = new Date();
+                var o = eval('({a:function(startTime, endTime) { ' + this.value + '})');
+
+                var result = o.a(startTime, endTime);
+
+                return result;
             }
         },
     }
